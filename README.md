@@ -1,6 +1,6 @@
 **Project Overview:**
 
-SocialSphere is a mobile application developed using React Native and Firebase, created using custom UI components and designed to facilitate social interaction and communication among users. It incorporates features such as user registration and login, profile management, messaging,location displaying, image sharing, and social networking.
+SocialSphere is a mobile application developed using React Native, Expo and Firebase, created using custom UI components and designed to facilitate social interaction and communication among users. It incorporates features such as user registration and login, profile management, messaging,location displaying, image sharing, and social networking.
 
 **Functionalities:**
 
@@ -64,6 +64,14 @@ SocialSphere is a mobile application developed using React Native and Firebase, 
 -   **Context API:** The app utilizes React's Context API for state management, enabling global access to user authentication and other shared data across components.
 -   **Current Location Display:** The component utilizes the react-native-maps package to render a map view and display the user's current location using the expo-location package. It requests permission to access the device's location and retrieves the current coordinates to center the map view on the user's location.
 -   **Date and Time Display:** Messages and posts within the application display the date and time they were sent or posted, providing users with context regarding the timing of the communication or content creation.
+
+
+**Design Patterns:**
+
+-   **Provider Pattern:** Context API to provide authentication and chat context to the entire component tree. This allows components nested deep in the hierarchy to access this data without prop drilling.
+-   **Signleton Pattern:** The application utilizes the singleton design pattern for logging purposes. The MainLogger class ensures that only one instance of the logger is created throughout the application's lifecycle. This prevents multiple instances of the logger from being created, ensuring a centralized and consistent logging mechanism.
+-   **Builder Pattern:** The application utilizes the builder design pattern to construct user objects with flexible configurations. The UserConstruct and UserBuilder classes collaborate to construct user objects with specified attributes.
+-   **Container-Component Pattern:** Utilized in the App component, which acts as the container for the entire application, orchestrating navigation and wrapping it with providers.
 
 
 **Dependencies:**
