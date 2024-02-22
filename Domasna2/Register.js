@@ -21,6 +21,7 @@ import {
 	widthPercentageToDP as wp,
 	heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import mainLogger from './context/SingletonLogger';
 
 function Register({ navigation }) {
 	const [displayName, setDisplayName] = useState('');
@@ -40,7 +41,7 @@ function Register({ navigation }) {
 				quality: 1,
 			});
 
-			console.log(result);
+			mainLogger.log(result);
 
 			if (!result.canceled) {
 				const response = await fetch(result.assets[0].uri);
@@ -50,7 +51,7 @@ function Register({ navigation }) {
 				}
 
 				const blob = await response.blob();
-				console.log('fechna');
+				mainLogger.log("fetchna");
 				setFile(blob);
 			}
 		} catch (error) {
@@ -58,9 +59,42 @@ function Register({ navigation }) {
 		}
 	};
 
+	function UserConstruct() {
+		this.construct = function (builder) {
+			builder.addAuth();
+			builder.addEmail();
+			builder.addPassword();
+			return builder.get();
+		}
+	}
+
+	function UserBuilder() {
+		this.user = {auth: undefined, email: "", password: ""};
+
+		this.addAuth = function () {
+			this.user.auth = auth;
+		}
+
+		this.addEmail = function () {
+			this.user.email = email;
+		}
+
+		this.addPassword = function () {
+			this.user.password = password;
+		}
+
+		this.get = function () {
+			return this.user;
+		}
+	}
+
 	const handlesubmit = async () => {
 		try {
-			const res = await createUserWithEmailAndPassword(auth, email, password);
+			let userConstruct = new UserConstruct();
+			let userBuilder = new UserBuilder();
+			let myNewUser = userConstruct.construct(userBuilder);
+
+			const res = await createUserWithEmailAndPassword(myNewUser.auth, myNewUser.email, myNewUser.password);
 
 			const storageRef = ref(storage, displayName);
 
@@ -93,7 +127,7 @@ function Register({ navigation }) {
 
 							await setDoc(doc(db, 'userChats', res.user.uid), {});
 							// Adjust this navigation based on your React Navigation setup
-							console.log('User profile and data updated successfully.');
+							mainLogger.log('User profile and data updated successfully.');
 							setErr(false);
 						} catch (uploadError) {
 							console.error(
@@ -113,7 +147,7 @@ function Register({ navigation }) {
 						? 'https://firebasestorage.googleapis.com/v0/b/labmis-1c6c2.appspot.com/o/pp_1%404x.png?alt=media&token=dbd4a251-4fd2-4e85-93bf-a0af91fb06a6'
 						: 'https://firebasestorage.googleapis.com/v0/b/labmis-1c6c2.appspot.com/o/pp_2%404x.png?alt=media&token=db283f8e-5356-472f-8370-414617104897';
 				profileData.photoURL = defaultPhotoURL;
-				console.log('Profile Data:', profileData);
+				console.log("Profile Data: ", profileData);
 				await updateProfile(res.user, profileData);
 				await new Promise((resolve) => setTimeout(resolve, 1000));
 				const updatedUser = auth.currentUser;
@@ -127,7 +161,7 @@ function Register({ navigation }) {
 
 				await setDoc(doc(db, 'userChats', res.user.uid), {});
 				// navigation.navigate('Home'); // Adjust this navigation based on your React Navigation setup
-				console.log('User profile and data updated successfully.');
+				mainLogger.log('User profile and data updated successfully.');
 				setErr(false);
 			}
 			setFile(null);
